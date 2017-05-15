@@ -25,7 +25,6 @@ public class ParseApplications {
     }
 
     /**
-     *
      * @param xmlData XML data downloaded from the rss feed
      * @return boolean to state whether parsing is successful or not
      */
@@ -46,13 +45,13 @@ public class ParseApplications {
             int eventType = xpp.getEventType();
 
             //Keep looping until end of document is reach
-            while(eventType != XmlPullParser.END_DOCUMENT) {
+            while (eventType != XmlPullParser.END_DOCUMENT) {
                 String tagName = xpp.getName();
                 switch (eventType) {
                     //Gets the tag i.e. entry, id, title, summary
                     case XmlPullParser.START_TAG:
                         Log.d(TAG, "parse: Starting tag for " + tagName);
-                        if("entry".equalsIgnoreCase(tagName)) {
+                        if ("entry".equalsIgnoreCase(tagName)) {
                             inEntry = true;
                             currentRecord = new FeedEntry();
                         }
@@ -66,19 +65,19 @@ public class ParseApplications {
                     //Saves the text to the current record based on the tag
                     case XmlPullParser.END_TAG:
                         Log.d(TAG, "parse: Ending tag for " + tagName);
-                        if(inEntry) {
-                            if("entry".equalsIgnoreCase(tagName)) {
+                        if (inEntry) {
+                            if ("entry".equalsIgnoreCase(tagName)) {
                                 applications.add(currentRecord);
                                 inEntry = false;
-                            } else if("name".equalsIgnoreCase(tagName)) {
+                            } else if ("name".equalsIgnoreCase(tagName)) {
                                 currentRecord.setName(textValue);
-                            } else if("artist".equalsIgnoreCase(tagName)) {
+                            } else if ("artist".equalsIgnoreCase(tagName)) {
                                 currentRecord.setArtist(textValue);
-                            } else if("releaseDate".equalsIgnoreCase(tagName)) {
+                            } else if ("releaseDate".equalsIgnoreCase(tagName)) {
                                 currentRecord.setReleaseDate(textValue);
-                            } else if("summary".equalsIgnoreCase(tagName)) {
+                            } else if ("summary".equalsIgnoreCase(tagName)) {
                                 currentRecord.setSummary(textValue);
-                            } else if("image".equalsIgnoreCase(tagName)) {
+                            } else if ("image".equalsIgnoreCase(tagName)) {
                                 currentRecord.setImageURL(textValue);
                             }
                         }
@@ -90,8 +89,11 @@ public class ParseApplications {
                 eventType = xpp.next();
 
             }
-
-        } catch(Exception e) {
+            for (FeedEntry app : applications) {
+                Log.d(TAG, "******************");
+                Log.d(TAG, app.toString());
+            }
+        } catch (Exception e) {
             status = false;
             e.printStackTrace();
         }
