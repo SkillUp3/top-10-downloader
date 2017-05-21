@@ -23,13 +23,13 @@ import static com.example.ian.top10downloader.R.id.tvSummary;
  * Created by ian on 18/05/2017.
  */
 
-public class FeedAdapter extends ArrayAdapter {
+public class FeedAdapter<T extends FeedEntry> extends ArrayAdapter {
     private static final String TAG = "FeedAdapter";
     private final int layoutResource;
     private final LayoutInflater layoutInflater;
-    private List<FeedEntry> applications;
+    private List<T> applications;
 
-    public FeedAdapter(Context context, int resource, List<FeedEntry> applications) {
+    public FeedAdapter(Context context, int resource, List<T> applications) {
         super(context, resource);
         this.layoutResource = resource;
         this.layoutInflater = LayoutInflater.from(context);
@@ -56,7 +56,7 @@ public class FeedAdapter extends ArrayAdapter {
         }
 
 
-        FeedEntry currentApp = applications.get(position);
+        T currentApp = applications.get(position);
 
         viewHolder.tvName.setText(currentApp.getName());
         viewHolder.tvArtist.setText(currentApp.getArtist());
