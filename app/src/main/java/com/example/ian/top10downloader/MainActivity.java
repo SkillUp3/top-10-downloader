@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -28,8 +30,43 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: starting AsyncTask");
         DownloadData downloadData = new DownloadData();
-        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/limit=100/xml");
+        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/limit=10/xml");
         Log.d(TAG, "onCreate: done");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.feeds_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        String feedUrl;
+
+        switch (id) {
+            case R.id.mnuFree:
+                feedUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml";
+                break;
+            case R.id.mnuPaid:
+                feedUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/limit=10/xml";
+                break;
+            case R.id.mnuSongs:
+                feedUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=10/xml";
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        downloadUrl(feedUrl);
+        return true;
+    }
+    
+    private void downloadUrl(String feedUrl){
+        Log.d(TAG, "downloadUrl: starting AsyncTask");
+        DownloadData downloadData = new DownloadData();
+        downloadData.execute(feedUrl);
+        Log.d(TAG, "downloadUrl: done");
     }
 
     /**
@@ -51,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.d(TAG, "onPostExecute: parameter is " + s);
+//            Log.d(TAG, "onPostExecute: parameter is " + s);
             ParseApplications parseApplications = new ParseApplications();
             parseApplications.parse(s);
 
@@ -74,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... strings) {
             Log.d(TAG, "doInBackground: starts with " + strings[0]);
             String rssFeed = downloadXML(strings[0]);
-            if(rssFeed == null) {
+            if (rssFeed == null) {
                 Log.e(TAG, "doInBackground: Error downloading");
             }
             return rssFeed;
@@ -83,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Downloads the xml data through the HttpURLConnection instance
          * Conveerts response to a byte stream that is passed to a BufferedReader
+         *
          * @param urlPath URL where to download the rssfeed from
          * @return xmlResult.toString()
          */
@@ -104,19 +142,19 @@ public class MainActivity extends AppCompatActivity {
                 //Appends xmlResult until all the data inside the reader is copied
                 int charsRead;
                 char[] inputBuffer = new char[500];
-                while(true){
+                while (true) {
                     charsRead = reader.read(inputBuffer);
-                    if(charsRead < 0) {
+                    if (charsRead < 0) {
                         break;
                     }
-                    if(charsRead > 0) {
+                    if (charsRead > 0) {
                         xmlResult.append(String.copyValueOf(inputBuffer, 0, charsRead));
                     }
                 }
                 reader.close();
 
                 return xmlResult.toString();
-            } catch(MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 Log.e(TAG, "downloadXML: Invalid URL " + e.getMessage());
             } catch (IOException e) {
                 Log.e(TAG, "downloadXML: IO Exception reading data: " + e.getMessage());
