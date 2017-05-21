@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: starting AsyncTask");
         DownloadData downloadData = new DownloadData();
-        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=25/xml");
+        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/limit=100/xml");
         Log.d(TAG, "onCreate: done");
     }
 
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "downloadXML: Invalid URL " + e.getMessage());
             } catch (IOException e) {
                 Log.e(TAG, "downloadXML: IO Exception reading data: " + e.getMessage());
+
             }
             return null;
         }
